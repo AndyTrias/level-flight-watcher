@@ -3,16 +3,18 @@
   "currency": "USD",
   "monthsAhead": 12,
   "tripTypes": ["OW"],
-  "routes": ["EZE", "SCL", "LIM", "MIA", "JFK", "LAX", "BOS"],
+  "homeOrigin": "EZE",
+  "targetTotal": 350,
   "requireCampaignTag": true,
-  "thresholds": {
-    "EZE": { "OW": 250 },
-    "SCL": { "OW": 250 },
-    "LIM": { "OW": 250 },
-    "MIA": { "OW": 250 },
-    "JFK": { "OW": 250 },
-    "BOS": { "OW": 250 },
-    "LAX": { "OW": 250 }
+  "routes": ["EZE", "SCL", "LIM", "MIA", "JFK", "LAX", "BOS"],
+  "positioning": {
+    "EZE": 0,
+    "SCL": 150,
+    "LIM": 400,
+    "MIA": 750,
+    "JFK": 950,
+    "LAX": 1000,
+    "BOS": 1000
   },
   "routeNames": {
     "EZE": "Buenos Aires",

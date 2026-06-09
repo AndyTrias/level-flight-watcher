@@ -44,12 +44,23 @@ async function main() {
   const state = await loadState(STATE_PATH);
   const today = new Date().toISOString().slice(0, 10);
 
+  // Solo tiene sentido escanear rutas cuyo posicionamiento (solo) ya no supere el
+  // techo: si positioning[origin] >= targetTotal, esa ruta nunca puede ser oferta
+  // (ni con tarifa $0). Las salteamos: más rápido y menos riesgo de bloqueo.
+  const positioning = config.positioning || {};
+  const activeRoutes = config.routes.filter((r) => (positioning[r] ?? 0) < config.targetTotal);
+  const skipped = config.routes.filter((r) => !activeRoutes.includes(r));
+
   console.log(
-    `[${new Date().toISOString()}] Escaneando ${config.routes.length} rutas x ` +
-      `${config.tripTypes.length} tipos x ${config.monthsAhead} meses...`
+    `[${new Date().toISOString()}] Techo total $${config.targetTotal}. ` +
+      `Rutas activas: ${activeRoutes.join(", ") || "(ninguna)"}` +
+      (skipped.length ? ` | omitidas por posicionamiento: ${skipped.join(", ")}` : "")
   );
 
-  const { blocked, prices, okCombos, totalCombos } = await scrape(config);
+  const { blocked, prices, okCombos, totalCombos } = await scrape({
+    ...config,
+    routes: activeRoutes,
+  });
 
   if (blocked) {
     state.blockedStreak = (state.blockedStreak || 0) + 1;

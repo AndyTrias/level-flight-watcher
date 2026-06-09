@@ -1,31 +1,31 @@
 /**
- * Decide qué precios son "ofertas" según la config.
- * Regla: (price <= umbral[origin][triptype]) Y (si requireCampaignTag, tag 'campaign').
+ * Decide qué precios son "ofertas" según el modelo de COSTO TOTAL:
+ *   total = tarifa LEVEL (origen→BCN) + posicionamiento estimado (EZE→origen)
+ * Es oferta si total <= targetTotal (y, si requireCampaignTag, tiene tag 'campaign').
  * Descarta fechas pasadas.
  *
  * @param {Array} prices  salida normalizada de scrape()
  * @param {Object} config
- * @returns {Array} ofertas ordenadas por precio asc
+ * @returns {Array} ofertas ordenadas por costo total asc
  */
 export function evaluate(prices, config) {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const { thresholds, requireCampaignTag } = config;
+  const { positioning = {}, targetTotal, requireCampaignTag } = config;
   const deals = [];
 
   for (const p of prices) {
     if (p.date < today) continue;
 
-    const t = thresholds[p.origin];
-    if (!t || typeof t[p.triptype] !== "number") continue;
-    const limit = t[p.triptype];
+    const pos = positioning[p.origin] ?? 0;
+    const total = p.price + pos;
 
-    if (p.price > limit) continue;
+    if (total > targetTotal) continue;
     if (requireCampaignTag && !p.tags.includes("campaign")) continue;
 
-    deals.push({ ...p, threshold: limit });
+    deals.push({ ...p, positioning: pos, total });
   }
 
-  deals.sort((a, b) => a.price - b.price);
+  deals.sort((a, b) => a.total - b.total);
   return deals;
 }
 

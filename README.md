@@ -14,7 +14,8 @@ Actions** cada ~10 minutos.
 
 1. `scraper.js` abre flylevel.com con un navegador real (Playwright) para pasar el
    anti-bot Akamai y consulta la API pública del calendario de precios.
-2. `evaluator.js` marca como "oferta" los días con tag `campaign` y precio ≤ umbral.
+2. `evaluator.js` marca como "oferta" los días cuyo **costo total** (vuelo LEVEL +
+   posicionamiento estimado desde EZE hasta ese origen) queda bajo tu techo, con tag `campaign`.
 3. `state.js` recuerda lo ya avisado para no spamear (avisa solo lo nuevo o más barato).
 4. `notifier.js` manda el aviso a Telegram y Slack con link de reserva.
 
@@ -96,8 +97,13 @@ inactividad.
 
 ## Ajustar qué te avisa
 
+El bot razona por **costo total a Barcelona** = tarifa LEVEL (origen→BCN) +
+posicionamiento estimado desde EZE hasta ese origen. Avisa cuando el total queda
+por debajo de tu techo.
+
 Editá [`config.json`](./config.json):
-- `routes`: códigos IATA de origen (destino fijo `BCN`).
-- `thresholds`: precio máximo por ruta y tipo (`OW` solo ida, `RT` ida y vuelta), en USD.
-- `requireCampaignTag`: `true` exige tag de promo; `false` avisa solo por precio.
+- `targetTotal`: tu techo de costo total (USD). Subilo para más cobertura, bajalo para solo gangas excepcionales.
+- `positioning`: costo estimado (ida y vuelta) de llegar desde EZE a cada origen (`EZE` = 0). Estimaciones ajustables.
+- `routes`: orígenes a considerar (destino fijo `BCN`). Las rutas cuyo posicionamiento ya supera el techo se saltean solas.
+- `requireCampaignTag`: `true` exige tag de promo; `false` avisa solo por costo total.
 - `monthsAhead`: cuántos meses hacia adelante escanear.

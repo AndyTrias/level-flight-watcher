@@ -4,21 +4,20 @@ const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
 const TG_LIMIT = 3800; // margen bajo el límite de 4096 de Telegram
 
-function tripLabel(triptype) {
-  return triptype === "RT" ? "ida y vuelta" : "solo ida";
-}
-
 function bookingLink(d, config) {
   return (config.routePages && config.routePages[d.origin]) || "https://www.flylevel.com/";
 }
 
-/** Una línea por oferta, en Markdown (sirve para Telegram y Slack mrkdwn). */
+/** Una línea por oferta, en Markdown (sirve para Telegram y Slack mrkdwn).
+ *  Muestra el costo TOTAL (vuelo LEVEL + posicionamiento desde EZE). */
 function dealLine(d, config) {
   const name = (config.routeNames && config.routeNames[d.origin]) || d.origin;
   const cur = config.currency || "USD";
   const link = bookingLink(d, config);
-  const datePart = d.triptype === "RT" ? `salida ${d.date}` : d.date;
-  return `✈️ *${name} → Barcelona* · ${tripLabel(d.triptype)} · ${datePart} · *${cur}$${d.price}* (≤${d.threshold}) → [reservar](${link})`;
+  const pos = d.positioning || 0;
+  const breakdown =
+    pos > 0 ? ` (LEVEL ${cur}$${d.price} + ~${cur}$${pos} EZE→${d.origin})` : "";
+  return `✈️ *${name} → Barcelona* · ${d.date} · total *${cur}$${d.total}*${breakdown} → [reservar](${link})`;
 }
 
 // Máximo de ofertas a listar en un aviso (las más baratas primero). El resto se
@@ -28,8 +27,8 @@ const MAX_LINES = 25;
 export function formatDeals(deals, config) {
   const header =
     deals.length === 1
-      ? "🔥 *1 tarifa LEVEL bajo tu umbral*"
-      : `🔥 *${deals.length} tarifas LEVEL bajo tu umbral*`;
+      ? "🔥 *1 forma de llegar a Barcelona bajo tu techo de costo total*"
+      : `🔥 *${deals.length} formas de llegar a Barcelona bajo tu techo de costo total*`;
   const shown = deals.slice(0, MAX_LINES);
   const lines = shown.map((d) => dealLine(d, config));
   if (deals.length > MAX_LINES) {
