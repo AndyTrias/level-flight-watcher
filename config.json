@@ -1,0 +1,35 @@
+{
+  "destination": "BCN",
+  "currency": "USD",
+  "monthsAhead": 12,
+  "tripTypes": ["OW"],
+  "routes": ["EZE", "SCL", "LIM", "MIA", "JFK", "LAX", "BOS"],
+  "requireCampaignTag": true,
+  "thresholds": {
+    "EZE": { "OW": 250 },
+    "SCL": { "OW": 250 },
+    "LIM": { "OW": 250 },
+    "MIA": { "OW": 250 },
+    "JFK": { "OW": 250 },
+    "BOS": { "OW": 250 },
+    "LAX": { "OW": 250 }
+  },
+  "routeNames": {
+    "EZE": "Buenos Aires",
+    "SCL": "Santiago de Chile",
+    "LIM": "Lima",
+    "MIA": "Miami",
+    "JFK": "Nueva York (JFK)",
+    "LAX": "Los Ángeles",
+    "BOS": "Boston"
+  },
+  "routePages": {
+    "EZE": "https://www.flylevel.com/en-us/flights/buenos-aires-barcelona-direct-flight",
+    "SCL": "https://www.flylevel.com/en-us/flights/santiago-de-chile-barcelona-direct-flight",
+    "LIM": "https://www.flylevel.com/en-us/flights/lima-barcelona-direct-flight",
+    "MIA": "https://www.flylevel.com/en-us/flights/miami-barcelona-direct-flight",
+    "JFK": "https://www.flylevel.com/en-us/flights/new-york-barcelona-direct-flight",
+    "LAX": "https://www.flylevel.com/en-us/flights/los-angeles-barcelona-direct-flight",
+    "BOS": "https://www.flylevel.com/en-us/flights/boston-barcelona-direct-flight"
+  }
+}
